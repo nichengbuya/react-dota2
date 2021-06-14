@@ -1,0 +1,40 @@
+@import '../../theme.scss';
+.tab-list{
+    display:flex;
+    padding: 5px;
+    justify-content:center;
+    .ability-card{
+        width:50px;
+        height:50px;
+        margin: 0 4px;
+        cursor:pointer;
+        background-size: 100% 100%;
+        transition: .1s;
+        &:hover{
+            transform: scale(1.2)
+        }
+    }
+}
+.content{
+    padding: 10px;
+    color:$txt-color;
+    background:$content-bkg-color;
+
+}
+.animation{
+    animation: fade .5s forwards;  
+}
+.stop{
+    animation: none;  
+}
+@keyframes fade{
+    0%{
+        opacity:0;
+        transform:translateY(50%)
+    }
+    100%{
+        opacity:1;
+        transform:translateY(0)
+    }
+}
+

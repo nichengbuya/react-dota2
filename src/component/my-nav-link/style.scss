@@ -1,10 +1,8 @@
-$head-nav:#181d4b;
-$head-nav-text:#ffffff;
-$head-nav-active:#102b6a;
-$head-nav-text-active:#f58220;
+@import '../../theme.scss';
 .link{
-    vertical-align: middle;
-    padding: 20px;
+    height:48px;
+    line-height: 48px;
+    padding: 0 20px;
     text-decoration:none;
     background-color: $head-nav;
     color: $head-nav-text;

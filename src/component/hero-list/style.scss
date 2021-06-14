@@ -1,0 +1,33 @@
+@import '../../theme.scss';
+.hero-list{
+    width:90%;
+    margin:0 auto;
+    display:flex;
+    flex-wrap: wrap;
+}
+.hero-card{
+    width:100px;
+    height:50px;
+    margin: 10px;
+    background-size: 100% 100%;
+    transition: transform .3s ease;
+    cursor: pointer;
+    .hero-discribe{
+        color: $txt-color;
+        position: absolute;
+        left:5px;
+        bottom:5px;
+        visibility:hidden;
+        opacity:0;
+        transform:translateY(100%);
+        transition:.3s;
+    }
+    &:hover{
+        transform:scale(1.5)
+    }
+    &:hover .hero-discribe{
+        visibility:visible;
+        opacity: 1;
+        transform: translateY(0)
+    }
+}

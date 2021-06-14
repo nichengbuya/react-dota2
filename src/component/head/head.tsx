@@ -1,4 +1,4 @@
-import MyNavLink from "../myNavLink"
+import MyNavLink from "../my-nav-link"
 import './style.scss';
 interface HeadProp{
     data:string[]

@@ -1,5 +1,5 @@
 import './home.scss'
-export function Home(){
+export default function Home(){
     return(
         <div className="bk">
             home
