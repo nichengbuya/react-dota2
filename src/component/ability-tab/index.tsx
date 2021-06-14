@@ -10,7 +10,7 @@ export default function AblityTab(props:AblityTabProp){
     const [animation,setAnimation] = useState('');
     const tabList = data.map((i,index)=>{
         return (
-            <div key={index} className="ability-card" style={{backgroundImage:`url(${i.img})`}}
+            <div key={index} className={`ability-card ${i.id === cur.id?'active':''}`} style={{backgroundImage:`url(${i.img})`}}
                 onClick={()=>{setAbility(i)}}
             >
             </div>

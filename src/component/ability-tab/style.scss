@@ -3,6 +3,9 @@
     display:flex;
     padding: 5px;
     justify-content:center;
+    .active{
+        transform: scale(1.2)
+    }
     .ability-card{
         width:50px;
         height:50px;
