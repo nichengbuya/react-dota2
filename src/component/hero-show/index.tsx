@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Word } from "./word";
 import "./style.scss";
 export default function HeroShow() {
@@ -7,8 +7,10 @@ export default function HeroShow() {
         const word = new Word({
             container
         });
-        word.addMesh();
-
+        async function addHero(){
+            await word.addHero();
+        }
+        addHero();
     },[]);
     return (
         <div ref={c => container = c} className="container">

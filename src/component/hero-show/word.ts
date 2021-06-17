@@ -1,17 +1,21 @@
 import { Scene, OrthographicCamera, WebGLRenderer,FogExp2, DirectionalLight, 
-    AmbientLight, Camera, CylinderGeometry, Mesh, MeshPhongMaterial } from 'three';
+    AmbientLight, Camera, Mesh, MeshPhongMaterial, LoadingManager, AnimationMixer, PointLight,  HemisphereLight,  PlaneGeometry, SpotLight, PerspectiveCamera  } from 'three';
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls';
+import { OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
+
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import { TGALoader} from 'three/examples/jsm/loaders/TGALoader';
 interface WordProp{
     container: HTMLDivElement;
 }
 export class Word{
     scene!: Scene;
-    orthographicCamera!: OrthographicCamera;
+    camera!: PerspectiveCamera;
     renderer!: WebGLRenderer;
     width: number;
     height: number;
     container: HTMLDivElement;
-    controls!: TrackballControls;
+    controls!: OrbitControls;
     animtion!: number;
     constructor(prop:WordProp){
         this.container = prop.container;
@@ -26,46 +30,62 @@ export class Word{
         this.renderer = new WebGLRenderer( { antialias: true,alpha: true  } );
         const {width,height,scene,renderer,container} = this;
         // const aspect = width / height;
-        this.orthographicCamera = new OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 1, 1000 );
-        this.orthographicCamera.position.z = 500;
+        this.camera = new PerspectiveCamera( 45,width/height, 1, 1000 );
+        const {camera} = this;
         // world
-        // scene.fog = new FogExp2( 0xcccccc, 0.002 );
-        //light
-        const dirLight1 = new DirectionalLight( 0xffffff );
-        dirLight1.position.set( 1, 1, 1 );
-        scene.add( dirLight1 );
-        const dirLight2 = new DirectionalLight( 0x002288 );
-        dirLight2.position.set( - 1, - 1, - 1 );
-        scene.add( dirLight2 );
-        const ambientLight = new AmbientLight( 0x222222 );
-        scene.add( ambientLight );
-        //renderer
+        camera.position.set( 100, 200, 300 );
+
+        // scene
+        const hemiLight = new HemisphereLight( 0xffffff, 0x444444 );
+        hemiLight.position.set( 0, 200, 0 );
+        scene.add( hemiLight );
+
+        const dirLight = new DirectionalLight( 0xffffff );
+        dirLight.position.set( 0, 200, 100 );
+        dirLight.castShadow = true;
+        dirLight.shadow.camera.top = 180;
+        dirLight.shadow.camera.bottom = - 100;
+        dirLight.shadow.camera.left = - 120;
+        dirLight.shadow.camera.right = 120;
+        scene.add( dirLight );
+
+        // ground
+        const mesh = new Mesh( new PlaneGeometry( 2000, 2000 ), new MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
+        mesh.rotation.x = - Math.PI / 2;
+        mesh.receiveShadow = true;
+        scene.add( mesh );
         renderer.setSize(width,height);
         container.appendChild(renderer.domElement);
-        window.addEventListener('resize', this.onWindowResize);
+        renderer.shadowMap.enabled = true;
+        window.addEventListener('resize',()=>{this.onWindowResize()});
         //control
-        this.createControl(this.orthographicCamera)
+        this.createControl(this.camera)
     }
 
     createControl(camera:Camera){
         const {renderer} = this;
-        this.controls = new TrackballControls( camera, renderer.domElement );
+        this.controls = new OrbitControls( camera, renderer.domElement );
         const {controls} = this;
-        controls.rotateSpeed = 1.0;
-        controls.zoomSpeed = 1.2;
-        controls.panSpeed = 0.8;
+        controls.rotateSpeed = 2.0;
+        controls.enablePan = false;
+        controls.enableZoom = false;
+        controls.enableDamping = true;
+        controls.minPolarAngle = Math.PI/2.2; 
+        controls.maxPolarAngle = Math.PI/2.2; 
+
+
     }
 
     onWindowResize(){
-        const {width,height,controls,renderer,orthographicCamera} = this;
-        orthographicCamera.updateProjectionMatrix();
+        const {width,height,controls,renderer,camera} = this;
+        camera.updateProjectionMatrix();
         renderer.setSize( width, height );
-        controls.handleResize();
+        // controls.handleResize();
     }
 
     render(){
-        const{renderer,scene,orthographicCamera} = this;
-        renderer.render(scene,orthographicCamera);
+        const{renderer,scene,camera} = this;
+        renderer.render(scene,camera);
     }
 
     animate(){
@@ -75,22 +95,24 @@ export class Word{
         this.render();
     }
 
-    addMesh(){
+    addHero(){
         const {scene} = this;
-        const geometry = new CylinderGeometry( 0, 10, 30, 4, 1 );
-        const material = new MeshPhongMaterial( { color: 0xffffff, flatShading: true } );
-
-        for ( let i = 0; i < 500; i ++ ) {
-
-            const mesh = new Mesh( geometry, material );
-            mesh.position.x = ( Math.random() - 0.5 ) * 1000;
-            mesh.position.y = ( Math.random() - 0.5 ) * 1000;
-            mesh.position.z = ( Math.random() - 0.5 ) * 1000;
-            mesh.updateMatrix();
-            mesh.matrixAutoUpdate = false;
-            scene.add( mesh );
-
-        }
+        const manager = new LoadingManager();
+        manager.addHandler( /\.tga$/i, new TGALoader() );
+        return new Promise((resolve,reject)=>{
+            new FBXLoader(manager).setPath('/pudge/').load('pudge_econ.fbx',(object)=>{
+                object.traverse( ( child:any )=> {
+                    if ( child.isMesh ) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                } );
+                resolve(object);
+                object.scale.set(.5,.5,.5)
+                scene.add( object );
+            },()=>{},(err)=>{
+                reject(err)
+            })
+        })
     }
-    
 } 
