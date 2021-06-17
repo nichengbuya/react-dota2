@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Word } from "./word";
-import "./style.scss";
 export default function HeroShow() {
     let container: any;
     useEffect(() => {
@@ -11,6 +10,9 @@ export default function HeroShow() {
             await word.addHero();
         }
         addHero();
+        return ()=>{
+            word.unload();
+        }
     },[]);
     return (
         <div ref={c => container = c} className="container">
