@@ -1,4 +1,6 @@
 import { RouteComponentProps, withRouter } from 'react-router-dom';
+import Search from '../search';
+
 import './style.scss';
 export interface Hero {
     complexity: number;
@@ -23,8 +25,12 @@ function HeroList (props:HeroListProp ) {
             </div>
         )
     })
+
+
+
     return (
         <div className="hero-list">
+            <Search></Search>
             {heroList}
         </div>
     )

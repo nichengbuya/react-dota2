@@ -1,6 +1,6 @@
 import {
     Scene, WebGLRenderer, DirectionalLight,
-    Camera, Mesh, MeshPhongMaterial, LoadingManager, HemisphereLight, PlaneGeometry, PerspectiveCamera, CylinderBufferGeometry, SpotLight, AmbientLight, AnimationMixer, Clock
+    Camera, Mesh, MeshPhongMaterial, LoadingManager, HemisphereLight, PerspectiveCamera, CylinderBufferGeometry, AnimationMixer, Clock
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
@@ -85,7 +85,7 @@ export class Word {
     }
 
     onWindowResize() {
-        const { width, height, controls, renderer, camera } = this;
+        const { width, height, renderer, camera } = this;
         camera.updateProjectionMatrix();
         renderer.setSize(width, height);
     }

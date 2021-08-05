@@ -13,7 +13,7 @@ export default function HeroShow() {
         return ()=>{
             word.unload();
         }
-    },[]);
+    },[container]);
     return (
         <div ref={c => container = c} className="container">
         </div>

@@ -45,7 +45,7 @@ export default function HeroDetail(props:HeroDetailProp) {
             setHeroDetail(res);
         }
         getHeroDetail(Number((match.params as any).id))
-    },[])
+    },[match])
     return (
         <div className="hero-detail-container">
             <div className="hero-detail-container-item">
