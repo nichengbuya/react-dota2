@@ -1,5 +1,6 @@
 import { Component } from "react";
 import { debounceTime, distinctUntilChanged, Subject } from "rxjs";
+import { bm } from "./bm";
 
 export default class Search extends Component <any,any>{
     subject = new Subject<string>()
@@ -14,7 +15,7 @@ export default class Search extends Component <any,any>{
             debounceTime(500),
             distinctUntilChanged()
         ).subscribe(v=>{
-            console.log(v)
+            console.log(bm(v))
         })
     }
     handleValueChange(e:any){
