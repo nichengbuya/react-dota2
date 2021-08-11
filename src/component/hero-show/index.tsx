@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import { Word } from "./word";
+import  World  from "./world";
 export default function HeroShow() {
     let container: any;
     useEffect(() => {
-        const word = new Word({
+        const word = new World({
             container
         });
         async function addHero(){
