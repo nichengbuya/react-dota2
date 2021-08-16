@@ -1,5 +1,5 @@
 import  {
-    Scene, WebGLRenderer, Mesh, MeshPhongMaterial, LoadingManager, HemisphereLight, PerspectiveCamera, CylinderBufferGeometry, AnimationMixer, Clock, 
+    Scene, WebGLRenderer, Mesh, MeshPhongMaterial, LoadingManager, PerspectiveCamera, CylinderBufferGeometry, AnimationMixer, Clock, AmbientLight, Vector2, Color, 
 } from 'three';
 import * as THREE  from　 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
@@ -20,46 +20,60 @@ export default class World {
     animtion!: number;
     mixer!: AnimationMixer;
     clock: Clock;
-    uniforms!: { time: { value: number; }; };
+    uniforms!: {
+        iTime: { value: number },
+        iResolution: { value: Vector2 },
+        color: { value: Color },
+    };
     constructor(prop: WordProp) {
         this.container = prop.container;
         this.width = prop.container.clientWidth;
         this.height = prop.container.clientHeight;
         this.clock = new Clock();
-        this.init();
-        this.animate();
     }
-
+    private static instance: World ;
+    static getInstance(container:any){
+        if(!this.instance || container){
+            this.instance = new World({container});
+        }
+        return this.instance;   
+    }
     init() {
  
         this.scene = new Scene();
         const {scene,container,width,height} = this;
 
-        const hemiLight = new HemisphereLight( 0xffffff, 0x444444 );
-        hemiLight.position.set( 0, 20, 0 );
-        scene.add( hemiLight );
-
+        scene.background = new Color(0xffffff);
         this.renderer = new WebGLRenderer( { antialias: true } );
         const {renderer} = this;
         renderer.setSize(width, height);
         container.appendChild(renderer.domElement);
         renderer.shadowMap.enabled = true;
 
+        const light = new AmbientLight(0xffffff);
+        scene.add(light);
 
         const camera = this.camera = new THREE.PerspectiveCamera( 45, width / height, 1, 10000 );
         camera.position.set( - 50, 40, 50 );
-
+        
         const controls = this.controls = new OrbitControls( camera, renderer.domElement );
         // controls.enablePan = false;
         // controls.enableZoom = false;
         controls.target.set( 0, 0, 0 );
         controls.update();
         this.uniforms = {
-            time: {
+            iTime: {
                 value: 0
+            },
+            iResolution:{
+                value: new Vector2(100, 100)
+            },
+            color: {
+                value: new Color(0x50bed7)
             }
         }
         window.addEventListener('resize', () => { this.onWindowResize() });
+        this.animate();
     }
 
 
@@ -80,7 +94,7 @@ export default class World {
         const delta = clock.getDelta();
         if ( mixer ) mixer.update( delta )
         controls.update();
-        uniforms.time.value = performance.now()/1000
+        uniforms.iTime.value = performance.now()/1000
         this.render();
     }
 

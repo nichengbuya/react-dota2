@@ -56,7 +56,6 @@ export default function HeroDetail(props:HeroDetailProp) {
                 heroDetail? <AblityTab data={heroDetail.abilities}></AblityTab>:''
             }
             </div>
-
         </div>
     )
 }
