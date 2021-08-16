@@ -77,7 +77,7 @@ export default class Home extends Component<any, { world: World }> {
           ctx.fillStyle = linearGradient
           ctx.fillRect(0, 0, width, height)
     
-          document.body.appendChild(paletteCanvas)
+        //   document.body.appendChild(paletteCanvas)
     
           let paletteTexture = new THREE.Texture(paletteCanvas)
           paletteTexture.minFilter = THREE.NearestFilter

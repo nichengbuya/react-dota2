@@ -1,21 +1,35 @@
 
-import { Switch, RouteProps, Route, Redirect } from 'react-router-dom';
+import {  RouteProps} from 'react-router-dom';
 import Head from '../component/head/head';
+import HeatMap from '../component/heat-map';
 import Hero from '../view/hero/hero';
 import HeroDetail from '../view/hero/hero-detail/hero-detail';
 import Home from '../view/home/home';
 import Login from '../view/login';
-
+import { Shader } from '../view/shader';
+import RouterView from './router-view';
 import './style.scss'
 const links = [
     'home',
-    'hero'
+    'hero',
+    'shader'
 ]
 const routes: Array<RouteProps> = [
     {
         component: Home,
         path: '/home',
         exact: true
+    },
+    {
+        component:Shader,
+        path: '/shader',
+        children: [
+            {
+                component:HeatMap,
+                path:'/shader/heat-map'
+            }
+        ]
+          
     },
     {
         component: Login,
@@ -33,31 +47,13 @@ const routes: Array<RouteProps> = [
         exact: true,
     }
 ]
-export function renderRoute(routes: Array<RouteProps>) {
-    return routes.map((route, index) => {
-        const { component: Component, children, ...rest } = route;
-        return (
-            <Route {...rest} key={index} render={(props) => {
-                return Component && (
-                    <Component {...props}>
-                        {
-                            children && renderRoute(children as Array<RouteProps>)
-                        }
-                    </Component>
-                )
-            }}></Route>
-        )
-    })
-}
+
 export default function Routers() {
     return (
         <div className="full-screen">
             <Head data={links}></Head>
             <div className="container">
-                <Switch>
-                    {renderRoute(routes)}
-                    <Redirect to="/home"></Redirect>
-                </Switch>
+                <RouterView routes={routes}></RouterView>
             </div>
 
         </div>
