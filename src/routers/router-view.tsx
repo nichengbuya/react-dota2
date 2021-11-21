@@ -16,6 +16,6 @@ export default function RouterView(props:{routes:Array<RouteProps>}){
                 }}></Route>
             })
         }
-        <Redirect exact from="/" to="/list"></Redirect>
+        <Redirect exact from="/" to="/home"></Redirect>
     </Switch>
 }

@@ -11,6 +11,9 @@ export default class Home extends Component<any, { world: World }> {
     componentDidMount() {     
         this.init();
     }
+    componentWillUnmount(){
+      World.getInstance().unload();
+    }
     init() {
         const segments = 30
         const w = 256
@@ -24,7 +27,6 @@ export default class Home extends Component<any, { world: World }> {
           }
           return temperatureArray
         }
-    
         // 绘制辐射圆
         let drawCircular = (context: CanvasRenderingContext2D,opts: { x: any; y: any; radius: number; weight: number; }) => {
           let {x, y, radius, weight} = opts;
@@ -125,7 +127,7 @@ export default class Home extends Component<any, { world: World }> {
 
         const planeMate = new THREE.ShaderMaterial({
             transparent: true,
-            side: THREE.DoubleSide,
+            side: THREE.DoubleSide, 
             uniforms: {
                 'alphaScaleMap' : {
                   value: getAlphaScaleMap(w, h)
@@ -144,7 +146,9 @@ export default class Home extends Component<any, { world: World }> {
     }
     render() {
         return (
-            <div id="home"></div>
+            <div id="home">
+
+            </div>
         )
     }
 }

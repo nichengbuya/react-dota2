@@ -10,6 +10,7 @@
     "@types/node": "^12.20.15",
     "@types/react": "^17.0.11",
     "@types/react-dom": "^17.0.7",
+    "ammo.js": "^0.0.10",
     "glsl-noise": "^0.0.0",
     "glslify": "^7.1.1",
     "react": "^17.0.2",
@@ -22,7 +23,9 @@
     "web-vitals": "^1.1.2"
   },
   "browserify": {
-    "transform": ["glslify"]
+    "transform": [
+      "glslify"
+    ]
   },
   "scripts": {
     "start": "react-scripts start",

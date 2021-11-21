@@ -1,5 +1,5 @@
 import  {
-    Scene, WebGLRenderer, Mesh, MeshPhongMaterial, LoadingManager, PerspectiveCamera, CylinderBufferGeometry, AnimationMixer, Clock, AmbientLight, Vector2, Color, 
+    Scene, WebGLRenderer, Mesh, MeshPhongMaterial, LoadingManager, PerspectiveCamera, CylinderBufferGeometry, AnimationMixer, Clock, AmbientLight, Vector2, Color, DirectionalLight, 
 } from 'three';
 import * as THREE  from　 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
@@ -19,7 +19,7 @@ export default class World {
     controls!: OrbitControls;
     animtion!: number;
     mixer!: AnimationMixer;
-    clock: Clock;
+    clock: Clock = new Clock();
     uniforms!: {
         iTime: { value: number },
         iResolution: { value: Vector2 },
@@ -29,10 +29,9 @@ export default class World {
         this.container = prop.container;
         this.width = prop.container.clientWidth;
         this.height = prop.container.clientHeight;
-        this.clock = new Clock();
     }
     private static instance: World ;
-    static getInstance(container:any){
+    static getInstance(container?:any){
         if(!this.instance || container){
             this.instance = new World({container});
         }
@@ -43,16 +42,32 @@ export default class World {
         this.scene = new Scene();
         const {scene,container,width,height} = this;
 
-        scene.background = new Color(0xffffff);
+        scene.background = new Color(0xeeeeee);
         this.renderer = new WebGLRenderer( { antialias: true } );
         const {renderer} = this;
         renderer.setSize(width, height);
         container.appendChild(renderer.domElement);
         renderer.shadowMap.enabled = true;
 
-        const light = new AmbientLight(0xffffff);
-        scene.add(light);
+        const ambientLight = new AmbientLight( 0x404040 );
+        scene.add( ambientLight );
 
+        const light = new DirectionalLight( 0xffffff, 1 );
+        light.position.set( - 10, 10, 5 );
+        light.castShadow = true;
+        const d = 10;
+        light.shadow.camera.left = - d;
+        light.shadow.camera.right = d;
+        light.shadow.camera.top = d;
+        light.shadow.camera.bottom = - d;
+
+        light.shadow.camera.near = 2;
+        light.shadow.camera.far = 50;
+
+        light.shadow.mapSize.x = 1024;
+        light.shadow.mapSize.y = 1024;
+
+        scene.add( light );
         const camera = this.camera = new THREE.PerspectiveCamera( 45, width / height, 1, 10000 );
         camera.position.set( - 50, 40, 50 );
         
@@ -72,6 +87,7 @@ export default class World {
                 value: new Color(0x50bed7)
             }
         }
+        renderer.shadowMap.enabled = true;
         window.addEventListener('resize', () => { this.onWindowResize() });
         this.animate();
     }
