@@ -14,15 +14,13 @@ export default function World(id: string) {
         postCamera: THREE.Camera, 
         postMaterial: THREE.ShaderMaterial;
     let update: number;
-
     const init = ()=> {
         renderer = new THREE.WebGLRenderer();
-
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(clientWidth, clientHeight);
         container.appendChild(renderer.domElement);
 
-        camera = new THREE.PerspectiveCamera(70,clientWidth / clientHeight, 0.01, 50);
+        camera = new THREE.PerspectiveCamera(70, clientWidth / clientHeight, 0.01, 50);
         camera.position.z = 4;
 
         controls = new OrbitControls(camera, renderer.domElement);
@@ -45,7 +43,7 @@ export default function World(id: string) {
     function setupRenderTarget() {
 
         if (target) target.dispose();
-        target = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight);
+        target = new THREE.WebGLRenderTarget(clientWidth,clientHeight);
 
         target.depthBuffer = true;
         target.depthTexture = new THREE.DepthTexture(clientWidth,clientHeight);
@@ -55,6 +53,7 @@ export default function World(id: string) {
 
     function setupPost(){
         postCamera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+ 
         postMaterial = new THREE.ShaderMaterial({
             vertexShader:`
             varying vec2 vUv;
@@ -72,7 +71,7 @@ export default function World(id: string) {
 			uniform sampler2D tDepth;
 			uniform float cameraNear;
 			uniform float cameraFar;
-
+            uniform float iTime;
 
 			float readDepth( sampler2D depthSampler, vec2 coord ) {
 				float fragCoordZ = texture2D( depthSampler, coord ).x;
@@ -80,20 +79,42 @@ export default function World(id: string) {
 				return viewZToOrthographicDepth( viewZ, cameraNear, cameraFar );
 			}
 
-			void main() {
-				vec3 diffuse = texture2D( tDiffuse, vUv ).rgb;
-				float depth = readDepth( tDepth, vUv );
+            // float plot(vec2 st) {    
+            //     return smoothstep(0.02, 0.0, abs(st.y - st.x));// x - y的绝对值 = [0 - 0.02] 时，也就表示一根略带渐变的线。
+            // }
 
-                // gl_FragColor.rgb = 1.0 - vec3( depth );
-
-                gl_FragColor.rgb = diffuse;
+            float plot(vec2 st , float pct){
+                return  smoothstep( pct - 0.02, pct , st.y ) - 
+                        smoothstep( pct, pct + 0.02, st.y);
+            }
+            void main() {
+                float y =  sin( vUv.x  + iTime) * 2 ;
+                vec3 color = vec3(y);
+                float pct = plot(vUv, y);
+                color = (1.0 - pct) * color + pct * vec3(0.0,1.0,0.0);
+                gl_FragColor= vec4(color,1.0);
+            }
+            // void main() {
+            //     float y = vUv.x;
+            //     vec3 color = vec3(y);
+            //     float pct = plot(vUv);
+            //     color = (1.0 - pct) * color + pct * vec3(0.0,1.0,0.0);
+            //     gl_FragColor=vec4(color,1.0);
+            // }
             
-				gl_FragColor.a = 1.0;
-			}
+
+			// void main() {
+			// 	// vec3 diffuse = texture2D( tDiffuse, vUv ).rgb;
+			// 	float depth = readDepth( tDepth, vUv );
+            //     gl_FragColor.rgb = 1.0 - vec3( depth );
+            
+			// 	gl_FragColor.a = 1.0;
+			// }
             `,
-            uniforms:{
+            uniforms: {
                 cameraNear: { value: camera.near },
                 cameraFar: { value: camera.far },
+                iTime:{ value: 0},
                 tDiffuse: { value: null },
                 tDepth: { value: null }
             }
@@ -137,7 +158,6 @@ export default function World(id: string) {
     function animate() {
 
         update = requestAnimationFrame( animate );
-
         // render scene into target
         renderer.setRenderTarget( target );
         renderer.render( scene, camera );
@@ -145,7 +165,7 @@ export default function World(id: string) {
         // render post FX
         postMaterial.uniforms.tDiffuse.value = target.texture;
         postMaterial.uniforms.tDepth.value = target.depthTexture;
-
+        postMaterial.uniforms.iTime.value = performance.now() / 1000;
         renderer.setRenderTarget( null );
         renderer.render( postScene, postCamera );
 
