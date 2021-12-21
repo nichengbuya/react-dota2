@@ -1,0 +1,19 @@
+.drag-list{
+    ul{
+        list-style: none;
+    }
+    li{
+        width: 300px;
+        padding: 10px;
+        height: 30px;
+        list-style: none;
+    }
+    &-mask{
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba($color: #000000, $alpha: 0)
+    }
+}

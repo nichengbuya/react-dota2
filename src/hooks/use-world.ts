@@ -65,6 +65,7 @@ export default function World(id: string) {
             `,
             fragmentShader:`
             #include <packing>
+            #define PI 3.14159265359
 
 			varying vec2 vUv;
 			uniform sampler2D tDiffuse;
@@ -84,15 +85,27 @@ export default function World(id: string) {
             // }
 
             float plot(vec2 st , float pct){
-                return  smoothstep( pct - 0.02, pct , st.y ) - 
-                        smoothstep( pct, pct + 0.02, st.y);
+                return  smoothstep( pct - 0.01, pct , st.y ) - 
+                        smoothstep( pct, pct + 0.01, st.y);
             }
+            vec3 colorA = vec3(0.149,0.141,0.912);
+            vec3 colorB = vec3(1.000,0.833,0.224);
+            
             void main() {
-                float y =  sin( vUv.x  + iTime) * 2 ;
-                vec3 color = vec3(y);
-                float pct = plot(vUv, y);
-                color = (1.0 - pct) * color + pct * vec3(0.0,1.0,0.0);
-                gl_FragColor= vec4(color,1.0);
+                vec3 color = vec3(0.0);
+            
+                vec3 pct = vec3(vUv.x);
+                pct.r = smoothstep(0.0,1.0,vUv.x);
+                pct.g = sin(vUv.x * PI);
+                pct.b = pow(vUv.x, 0.5);
+
+                color = mix(colorA, colorB, pct);
+
+                color = mix(color,vec3(1.0,0.0,0.0),plot(vUv,pct.r));
+                color = mix(color,vec3(0.0,1.0,0.0),plot(vUv,pct.g));
+                color = mix(color,vec3(0.0,0.0,1.0),plot(vUv,pct.b));
+            
+                gl_FragColor = vec4(color,1.0);
             }
             // void main() {
             //     float y = vUv.x;

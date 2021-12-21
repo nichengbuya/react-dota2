@@ -1,4 +1,6 @@
 import { Component } from 'react';
+import DragList from '../../component/drag';
+
 import './style.scss';
 
 export default class Physic extends Component{
@@ -6,7 +8,8 @@ export default class Physic extends Component{
 
     render(){
         return (
-            <div ref={c=>this.container = c} id='physic'></div>
+            // <div ref={c=>this.container = c} id='physic'></div>
+            <DragList></DragList>
         )
     }
 
